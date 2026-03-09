@@ -6,7 +6,10 @@
 
 # Configuration
 REPO_URL="https://github.com/EXEMPLE/clawdbot-repo.git" # <--- METTRE A JOUR ICI
-INSTALL_DIR="clawdbot_install"
+INSTALL_DIR="${INSTALL_DIR:-clawdbot_install}"
+
+# Quitter immédiatement si une commande échoue
+set -e
 
 echo "=================================================="
 echo "   Installation de ClawdBot (Mode Sandbox)"
@@ -34,11 +37,11 @@ if [ -d "$INSTALL_DIR" ]; then
     echo "Le répertoire '$INSTALL_DIR' existe déjà."
 else
     # NOTE: Dans un cas réel, on décommenterait la ligne suivante :
-    # git clone "$REPO_URL" "$INSTALL_DIR"
+    # git clone "$REPO_URL" "$INSTALL_DIR" || exit 1
 
     # Pour la démonstration, on crée le dossier manuellement
     echo "Simulation du clonage de $REPO_URL..."
-    mkdir -p "$INSTALL_DIR"
+    mkdir -p "$INSTALL_DIR" || { echo "ERREUR: Impossible de créer le répertoire $INSTALL_DIR."; exit 1; }
 
     # Création de fichiers factices pour simuler le contenu du dépôt
     echo "requests" > "$INSTALL_DIR/requirements.txt"
@@ -54,10 +57,10 @@ fi
 # 3. Configuration de l'environnement virtuel
 echo "[3/4] Configuration de l'environnement virtuel Python..."
 
-cd "$INSTALL_DIR" || exit
+cd "$INSTALL_DIR" || { echo "ERREUR: Impossible d'accéder à $INSTALL_DIR."; exit 1; }
 
 if [ ! -d "venv" ]; then
-    python3 -m venv venv
+    python3 -m venv venv || { echo "ERREUR: Impossible de créer l'environnement virtuel."; exit 1; }
     echo "Environnement virtuel 'venv' créé."
 else
     echo "L'environnement virtuel existe déjà."
@@ -67,15 +70,15 @@ fi
 echo "[4/4] Installation des dépendances..."
 
 # Activation de l'environnement virtuel
-source venv/bin/activate
+source venv/bin/activate || { echo "ERREUR: Impossible d'activer l'environnement virtuel."; exit 1; }
 
 # Mise à jour de pip
-pip install --upgrade pip > /dev/null 2>&1
+pip install --upgrade pip > /dev/null 2>&1 || true
 
 # Installation depuis requirements.txt
 if [ -f "requirements.txt" ]; then
     echo "Installation des paquets listés dans requirements.txt..."
-    pip install -r requirements.txt
+    pip install -r requirements.txt || { echo "ERREUR: Impossible d'installer les dépendances."; exit 1; }
 else
     echo "Aucun fichier requirements.txt trouvé."
 fi
