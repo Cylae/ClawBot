@@ -28,3 +28,21 @@ Le projet est gratuit et le code est accessible à tous. Cependant, il s'adresse
 
 ## En résumé
 C'est un outil fascinant et très puissant pour l'automatisation personnelle, mais à utiliser avec une extrême prudence pour l'instant en raison des risques de sécurité.
+
+## Tests et Fiabilité
+Afin de garantir une installation robuste, particulièrement dans des environnements divers (permissions restreintes, outils manquants, exécutions multiples), une suite de tests rigoureuse a été mise en place avec `pytest`.
+
+Le script d'installation `install_clawdbot.sh` intègre maintenant :
+* Un arrêt immédiat en cas d'erreur de commande (`set -e`).
+* La possibilité de surcharger le répertoire d'installation via la variable d'environnement `INSTALL_DIR`.
+* Une meilleure gestion des erreurs liées aux permissions et aux créations d'environnements virtuels.
+
+### Comment lancer les tests
+Pour s'assurer que le script d'installation fonctionne à 100%, vous pouvez lancer la gigantesque batterie de tests ainsi :
+```bash
+# Installation de pytest
+pip install pytest
+
+# Exécution des tests d'installation
+pytest test_install.py
+```
