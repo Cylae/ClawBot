@@ -1,95 +1,103 @@
 #!/bin/bash
 
-# Script d'installation pour ClawdBot (OpenClaw / Moltbot)
-# Note: Ce script est un modèle (template). Vous devez mettre à jour la variable REPO_URL
-# avec l'adresse réelle du dépôt GitHub du projet une fois qu'elle est connue.
+# Installation script for ClawdBot (OpenClaw / Moltbot)
+# Note: This script is a template. You must update the REPO_URL variable
+# with the actual GitHub repository URL once it is known.
 
 # Configuration
-REPO_URL="https://github.com/EXEMPLE/clawdbot-repo.git" # <--- METTRE A JOUR ICI
+REPO_URL="https://github.com/EXEMPLE/clawdbot-repo.git" # <--- UPDATE HERE
 INSTALL_DIR="${INSTALL_DIR:-clawdbot_install}"
 
-# Quitter immédiatement si une commande échoue
-set -e
+# Exit immediately if a command fails, treat unset variables as an error, and catch pipe failures
+set -euo pipefail
 
 echo "=================================================="
-echo "   Installation de ClawdBot (Mode Sandbox)"
+echo "   ClawdBot Installation (Sandbox Mode)"
 echo "=================================================="
 
-# 1. Vérification des pré-requis
-echo "[1/4] Vérification des outils nécessaires..."
+# 1. Check prerequisites
+echo "[1/4] Checking necessary tools..."
 
 if ! command -v git &> /dev/null; then
-    echo "ERREUR: git n'est pas installé."
+    echo "ERROR: git is not installed."
     exit 1
 fi
 
 if ! command -v python3 &> /dev/null; then
-    echo "ERREUR: python3 n'est pas installé."
+    echo "ERROR: python3 is not installed."
     exit 1
 fi
 
-echo "Outils détectés : Git et Python3."
+echo "Detected tools: Git and Python3."
 
-# 2. Clonage du dépôt
-echo "[2/4] Préparation du répertoire du projet..."
+# 2. Clone repository
+echo "[2/4] Preparing project directory..."
 
 if [ -d "$INSTALL_DIR" ]; then
-    echo "Le répertoire '$INSTALL_DIR' existe déjà."
+    echo "The directory '$INSTALL_DIR' already exists."
 else
-    # NOTE: Dans un cas réel, on décommenterait la ligne suivante :
+    # NOTE: In a real scenario, uncomment the following line:
     # git clone "$REPO_URL" "$INSTALL_DIR" || exit 1
 
-    # Pour la démonstration, on crée le dossier manuellement
-    echo "Simulation du clonage de $REPO_URL..."
-    mkdir -p "$INSTALL_DIR" || { echo "ERREUR: Impossible de créer le répertoire $INSTALL_DIR."; exit 1; }
+    # For demonstration, we create the directory manually
+    echo "Simulating cloning of $REPO_URL..."
+    mkdir -p "$INSTALL_DIR" || { echo "ERROR: Cannot create directory $INSTALL_DIR."; exit 1; }
 
-    # Création de fichiers factices pour simuler le contenu du dépôt
+    # Creating dummy files to simulate repository content
     echo "requests" > "$INSTALL_DIR/requirements.txt"
     echo "openai" >> "$INSTALL_DIR/requirements.txt"
     echo "anthropic" >> "$INSTALL_DIR/requirements.txt"
     echo "python-dotenv" >> "$INSTALL_DIR/requirements.txt"
 
-    echo "print('ClawdBot démarré avec succès !')" > "$INSTALL_DIR/main.py"
+    echo "print('ClawdBot successfully started!')" > "$INSTALL_DIR/main.py"
 
-    echo "Dossier créé et fichiers simulés."
+    echo "Directory created and files simulated."
 fi
 
-# 3. Configuration de l'environnement virtuel
-echo "[3/4] Configuration de l'environnement virtuel Python..."
+# 3. Configure virtual environment
+echo "[3/4] Configuring Python virtual environment..."
 
-cd "$INSTALL_DIR" || { echo "ERREUR: Impossible d'accéder à $INSTALL_DIR."; exit 1; }
+cd "$INSTALL_DIR" || { echo "ERROR: Cannot access $INSTALL_DIR."; exit 1; }
 
 if [ ! -d "venv" ]; then
-    python3 -m venv venv || { echo "ERREUR: Impossible de créer l'environnement virtuel."; exit 1; }
-    echo "Environnement virtuel 'venv' créé."
+    python3 -m venv venv || { echo "ERROR: Cannot create virtual environment."; exit 1; }
+    echo "Virtual environment 'venv' created."
 else
-    echo "L'environnement virtuel existe déjà."
+    echo "The virtual environment already exists."
 fi
 
-# 4. Installation des dépendances
-echo "[4/4] Installation des dépendances..."
+# 4. Install dependencies
+echo "[4/4] Installing dependencies..."
 
-# Activation de l'environnement virtuel
-source venv/bin/activate || { echo "ERREUR: Impossible d'activer l'environnement virtuel."; exit 1; }
+# Activate virtual environment
+source venv/bin/activate || { echo "ERROR: Cannot activate virtual environment."; exit 1; }
 
-# Mise à jour de pip
-pip install --upgrade pip > /dev/null 2>&1 || true
+# Check if dependencies need to be installed or updated
+MARKER_FILE="venv/.installed"
 
-# Installation depuis requirements.txt
-if [ -f "requirements.txt" ]; then
-    echo "Installation des paquets listés dans requirements.txt..."
-    pip install -r requirements.txt || { echo "ERREUR: Impossible d'installer les dépendances."; exit 1; }
+if [ ! -f "$MARKER_FILE" ] || [ "requirements.txt" -nt "$MARKER_FILE" ]; then
+    # Upgrade pip
+    pip install --upgrade pip > /dev/null 2>&1 || true
+
+    # Install from requirements.txt
+    if [ -f "requirements.txt" ]; then
+        echo "Installing packages listed in requirements.txt..."
+        pip install -r requirements.txt || { echo "ERROR: Cannot install dependencies."; exit 1; }
+        touch "$MARKER_FILE"
+    else
+        echo "No requirements.txt file found."
+    fi
 else
-    echo "Aucun fichier requirements.txt trouvé."
+    echo "Dependencies are already up-to-date."
 fi
 
 echo ""
 echo "=================================================="
-echo "   Installation terminée !"
+echo "   Installation completed!"
 echo "=================================================="
-echo "Pour lancer le bot :"
+echo "To start the bot:"
 echo "1. cd $INSTALL_DIR"
 echo "2. source venv/bin/activate"
 echo "3. python main.py"
 echo ""
-echo "N'oubliez pas de configurer vos clés API (souvent dans un fichier .env)."
+echo "Do not forget to configure your API keys (often in a .env file)."

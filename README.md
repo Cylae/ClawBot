@@ -1,48 +1,49 @@
 # ClawdBot (OpenClaw / Moltbot)
 
-Voici un résumé compréhensible de l'actualité autour de ClawdBot (aussi appelé Moltbot ou plus récemment OpenClaw), l'agent IA qui fait beaucoup parler de lui en ce moment.
+Here is a comprehensive summary of ClawdBot (also known as Moltbot or more recently OpenClaw), the AI agent making waves right now.
 
-## En bref : C'est quoi ?
-ClawdBot n'est pas un simple chatbot avec qui on discute (comme ChatGPT). C'est un agent autonome conçu pour agir comme un véritable employé numérique.
-Au lieu de juste répondre à vos questions, il peut travailler à votre place sur votre ordinateur et prendre des initiatives.
+## In Brief: What is it?
+ClawdBot is not just a chatbot you talk to (like ChatGPT). It is an autonomous agent designed to act as a real digital employee.
+Instead of just answering your questions, it can work on your behalf on your computer and take initiatives.
 
-## Les 3 points clés à retenir :
+## 3 Key Points to Remember:
 
-### 1. Il est proactif et autonome
-Contrairement aux IA classiques qui attendent vos ordres, ClawdBot peut vous envoyer des messages de lui-même (sur WhatsApp, Telegram, etc.). Par exemple, il peut surveiller vos e-mails, votre agenda ou des cours de bourse et vous alerter s'il se passe quelque chose d'important, sans que vous n'ayez rien demandé.
+### 1. It is proactive and autonomous
+Unlike traditional AIs that wait for your commands, ClawdBot can send you messages on its own (on WhatsApp, Telegram, etc.). For example, it can monitor your emails, your calendar, or stock prices and alert you if something important happens, without you asking anything.
 
-### 2. Il contrôle votre ordinateur
-C'est sa grande force (et son grand risque). Il s'installe localement sur votre machine et a la capacité d'exécuter des actions concrètes :
-* Naviguer sur le web.
-* Gérer, créer ou modifier des fichiers.
-* Lancer des commandes techniques (scripts).
-* Contrôler votre maison connectée.
+### 2. It controls your computer
+This is its great strength (and its great risk). It installs locally on your machine and has the ability to execute concrete actions:
+* Navigate the web.
+* Manage, create, or modify files.
+* Run technical commands (scripts).
+* Control your smart home.
 
-### 3. C'est "Open Source" mais technique
-Le projet est gratuit et le code est accessible à tous. Cependant, il s'adresse pour l'instant aux utilisateurs avancés (développeurs, bidouilleurs). Il faut l'installer soi-même, souvent via des lignes de commande, et configurer ses propres clés d'accès aux modèles d'IA (comme ceux d'Anthropic ou OpenAI).
+### 3. It is "Open Source" but technical
+The project is free and the code is accessible to everyone. However, it is currently aimed at advanced users (developers, tinkerers). You have to install it yourself, often via command lines, and configure your own access keys to AI models (like those of Anthropic or OpenAI).
 
-## Pourquoi ça fait le buzz (et polémique) ?
-* **L'engouement :** C'est la promesse d'un assistant personnel "à la Iron Man" qui gère vos tâches ennuyeuses 24h/24 pendant que vous dormez.
-* **Les risques de sécurité :** Les experts tirent la sonnette d'alarme. Installer un programme qui a le droit de tout faire sur votre ordinateur (lire vos fichiers, lancer des programmes) et qui est connecté à Internet représente un risque énorme si l'IA "hallucine" ou si le programme est piraté.
-* **Changement de nom :** Le projet a dû changer de nom (devenant Moltbot puis OpenClaw) probablement pour éviter des problèmes juridiques avec l'IA "Claude" d'Anthropic.
+## Why the buzz (and controversy)?
+* **The hype:** It is the promise of an "Iron Man-style" personal assistant that handles your boring tasks 24/7 while you sleep.
+* **Security risks:** Experts are sounding the alarm. Installing a program that has the right to do everything on your computer (read your files, run programs) and is connected to the Internet represents a huge risk if the AI "hallucinates" or if the program is hacked.
+* **Name change:** The project had to change its name (becoming Moltbot then OpenClaw) probably to avoid legal issues with Anthropic's "Claude" AI.
 
-## En résumé
-C'est un outil fascinant et très puissant pour l'automatisation personnelle, mais à utiliser avec une extrême prudence pour l'instant en raison des risques de sécurité.
+## Summary
+It is a fascinating and very powerful tool for personal automation, but to be used with extreme caution for now due to security risks.
 
-## Tests et Fiabilité
-Afin de garantir une installation robuste, particulièrement dans des environnements divers (permissions restreintes, outils manquants, exécutions multiples), une suite de tests rigoureuse a été mise en place avec `pytest`.
+## Testing and Reliability
+To guarantee a robust installation, particularly in diverse environments (restricted permissions, missing tools, multiple executions), a rigorous test suite has been implemented with `pytest`.
 
-Le script d'installation `install_clawdbot.sh` intègre maintenant :
-* Un arrêt immédiat en cas d'erreur de commande (`set -e`).
-* La possibilité de surcharger le répertoire d'installation via la variable d'environnement `INSTALL_DIR`.
-* Une meilleure gestion des erreurs liées aux permissions et aux créations d'environnements virtuels.
+The installation script `install_clawdbot.sh` now features:
+* Immediate exit on command error (`set -euo pipefail`).
+* The ability to override the installation directory via the `INSTALL_DIR` environment variable.
+* Better error handling related to permissions and virtual environment creation.
+* Optimized idempotency via marker files to prevent unnecessary package updates.
 
-### Comment lancer les tests
-Pour s'assurer que le script d'installation fonctionne à 100%, vous pouvez lancer la gigantesque batterie de tests ainsi :
+### How to run the tests
+To ensure the installation script works 100%, you can run the test suite like this:
 ```bash
-# Installation de pytest
+# Install pytest
 pip install pytest
 
-# Exécution des tests d'installation
+# Run installation tests
 pytest test_install.py
 ```

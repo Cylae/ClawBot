@@ -19,32 +19,13 @@ def run_script(env=None):
     return result
 
 @pytest.fixture
-def clean_env():
-    # Setup
-    test_dir = "test_install_dir"
-    if os.path.exists(test_dir):
-        # Allow removing readonly files
-        for root, dirs, files in os.walk(test_dir):
-            for d in dirs:
-                os.chmod(os.path.join(root, d), stat.S_IRWXU)
-            for f in files:
-                os.chmod(os.path.join(root, f), stat.S_IRWXU)
-        shutil.rmtree(test_dir)
-
+def clean_env(tmp_path):
+    test_dir = str(tmp_path / "test_install_dir")
     env = os.environ.copy()
     env["INSTALL_DIR"] = test_dir
     env["PATH"] = os.environ.get("PATH", "")
 
     yield env, test_dir
-
-    # Teardown
-    if os.path.exists(test_dir):
-        for root, dirs, files in os.walk(test_dir):
-            for d in dirs:
-                os.chmod(os.path.join(root, d), stat.S_IRWXU)
-            for f in files:
-                os.chmod(os.path.join(root, f), stat.S_IRWXU)
-        shutil.rmtree(test_dir)
 
 def test_normal_installation(clean_env):
     env, test_dir = clean_env
@@ -56,6 +37,7 @@ def test_normal_installation(clean_env):
     assert os.path.exists(os.path.join(test_dir, "venv"))
     assert os.path.exists(os.path.join(test_dir, "requirements.txt"))
     assert os.path.exists(os.path.join(test_dir, "main.py"))
+    assert os.path.exists(os.path.join(test_dir, "venv", ".installed"))
 
 def test_idempotency(clean_env):
     env, test_dir = clean_env
@@ -67,8 +49,9 @@ def test_idempotency(clean_env):
     # Second run
     result2 = run_script(env)
     assert result2.returncode == 0
-    assert "Le répertoire '{}' existe déjà.".format(test_dir) in result2.stdout
-    assert "L'environnement virtuel existe déjà." in result2.stdout
+    assert f"The directory '{test_dir}' already exists." in result2.stdout
+    assert "The virtual environment already exists." in result2.stdout
+    assert "Dependencies are already up-to-date." in result2.stdout
 
 def test_missing_git(clean_env, tmp_path):
     env, test_dir = clean_env
@@ -87,7 +70,7 @@ def test_missing_git(clean_env, tmp_path):
     result = run_script(env)
 
     assert result.returncode != 0
-    assert "ERREUR: git n'est pas installé." in result.stdout
+    assert "ERROR: git is not installed." in result.stdout
 
 def test_missing_python3(clean_env, tmp_path):
     env, test_dir = clean_env
@@ -106,7 +89,7 @@ def test_missing_python3(clean_env, tmp_path):
     result = run_script(env)
 
     assert result.returncode != 0
-    assert "ERREUR: python3 n'est pas installé." in result.stdout
+    assert "ERROR: python3 is not installed." in result.stdout
 
 def test_restricted_permissions(clean_env):
     env, test_dir = clean_env
